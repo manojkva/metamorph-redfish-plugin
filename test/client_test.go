@@ -19,9 +19,9 @@ func TestClientRequest(t *testing.T) {
 		  Output: os.Stdout,
 		  Level: hclog.Debug,})
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig:  common.Handshake,
-		Plugins:          common.PluginMap,
-		Cmd:              exec.Command("sh", "-c", "../metamorph-redfish-plugin 1900491a-ed8e-416d-a6d3-7b915d6f4554"),
+		HandshakeConfig:  redfish.Handshake,
+		Plugins:          redfish.PluginMap,
+		Cmd:              exec.Command("sh", "-c", "../metamorph-redfish-plugin d0ec996e-0c7a-44a8-a5ba-05ca19c61f3e"),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	        Logger: logger,})
 	defer client.Kill()
@@ -39,7 +39,7 @@ func TestClientRequest(t *testing.T) {
 		os.Exit(1)
 
 	}
-	service := raw.(common.Redfish)
+	service := raw.(redfish.Redfish)
 	//service := raw.(redfish.BMHNode)
   x, err := service.GetGUUID()
   fmt.Printf("%v\n", string(x))

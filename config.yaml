@@ -9,6 +9,7 @@ database:
 logger:
     apipath: /tmp/metamorph_api.log
     controllerpath: /tmp/metamorph_controller.log
+    pluginpath: /tmp/metamorph_plugin.log
 
 testing:
     inputfile: "/root/go/src/github.com/manojkva/MetaMorph/examples/node_input.json"

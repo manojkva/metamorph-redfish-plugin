@@ -1,16 +1,18 @@
 package main
 
 import (
+	config "github.com/bm-metamorph/MetaMorph/pkg/config"
 	"encoding/json"
 	"fmt"
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
 	"github.com/hashicorp/go-plugin"
 	"github.com/manojkva/metamorph-plugin/plugins/redfish"
-	"github.com/manojkva/metamorph-redfish-plugin/pkg/redfish"
+	driver "github.com/manojkva/metamorph-redfish-plugin/pkg/redfish"
 	"os"
 )
 
 func main() {
+	config.SetLoggerConfig("logger.pluginpath")
 	if len(os.Args) != 2 {
 		fmt.Println("Usage go-redfish-plugin <uuid>")
 		os.Exit(1)
@@ -18,9 +20,11 @@ func main() {
 	uuid := os.Args[1]
 
 
-	var bmhnode redfish.BMHNode
+	var bmhnode driver.BMHNode
 
 	old  :=  os.Stdout
+
+	//discard stdout as any unfamilar output ends up with error on Server side.
 
 	os.Stdout,_ = os.Open(os.DevNull)
 
@@ -30,17 +34,17 @@ func main() {
 
 		err = json.Unmarshal(data, &bmhnode)
 	}
+	//revert std output
+	os.Stdout = old
 	if err != nil {
 
 		fmt.Printf("Failed to locate node in DB for uuid %v\n", uuid)
 		os.Exit(1)
 	}
-	os.Stdout = old
 	//Get node details from db
 	plugin.Serve(&plugin.ServeConfig{
-		HandshakeConfig: common.Handshake,
+		HandshakeConfig: redfish.Handshake,
 		Plugins: map[string]plugin.Plugin{
-//					"redfish": &common.RedfishPlugin{Impl: &redfish.BMHNode{}}},
-			"redfish": &common.RedfishPlugin{Impl: &bmhnode}},
+			"redfish": &redfish.RedfishPlugin{Impl: &bmhnode}},
 		GRPCServer: plugin.DefaultGRPCServer})
 }

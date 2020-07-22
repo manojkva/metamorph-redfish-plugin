@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
-	"github.com/manojkva/go-redfish-plugin/pkg/drivers/redfish"
+	"github.com/manojkva/metamorph-redfish-plugin/pkg/redfish"
 	"fmt"
 //	"os"
 )
