@@ -1,19 +1,27 @@
 package test
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
 	"testing"
+	"io/ioutil"
 
         hclog "github.com/hashicorp/go-hclog"
 
 	"github.com/hashicorp/go-plugin"
 	"github.com/manojkva/metamorph-plugin/plugins/redfish"
-	//"github.com/manojkva/go-redfish-plugin/pkg/drivers/redfish"
 )
 
 func TestClientRequest(t *testing.T) {
+	data,err := ioutil.ReadFile("../examples/nodeip.json" )
+	if  err  != nil{
+	    fmt.Printf("Could not read input config file\n")
+	    os.Exit(1)
+	}
+	inputConfig  :=  base64.StdEncoding.EncodeToString(data)
+
 	logger := hclog.New(&hclog.LoggerOptions{
 		  Name: "plugin",
 		  Output: os.Stdout,
@@ -21,7 +29,7 @@ func TestClientRequest(t *testing.T) {
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig:  redfish.Handshake,
 		Plugins:          redfish.PluginMap,
-		Cmd:              exec.Command("sh", "-c", "../metamorph-redfish-plugin d0ec996e-0c7a-44a8-a5ba-05ca19c61f3e"),
+		Cmd:              exec.Command("sh", "-c", "../metamorph-redfish-plugin " + string(inputConfig) ),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	        Logger: logger,})
 	defer client.Kill()
