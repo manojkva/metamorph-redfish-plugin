@@ -1,11 +1,5 @@
 ---
 
-database:
-    type: sqlite
-    path: "/tmp/db/metamorph.db"
-
-
-
 logger:
     apipath: /tmp/metamorph_api.log
     controllerpath: /tmp/metamorph_controller.log
