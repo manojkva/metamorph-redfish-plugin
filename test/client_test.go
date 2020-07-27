@@ -11,7 +11,7 @@ import (
         hclog "github.com/hashicorp/go-hclog"
 
 	"github.com/hashicorp/go-plugin"
-	"github.com/manojkva/metamorph-plugin/plugins/bmh"
+	"github.com/manojkva/metamorph-plugin/common/bmh"
 )
 
 func TestClientRequest(t *testing.T) {
@@ -25,11 +25,12 @@ func TestClientRequest(t *testing.T) {
 	logger := hclog.New(&hclog.LoggerOptions{
 		  Name: "plugin",
 		  Output: os.Stdout,
-		  Level: hclog.Debug,})
+		  Level: hclog.Trace,})
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig:  bmh.Handshake,
-		Plugins:          bmh.PluginMap,
-		Cmd:              exec.Command("sh", "-c", "../metamorph-redfish-plugin " + string(inputConfig) ),
+		Plugins: map[string]plugin.Plugin{
+			                        "metamorph-redfish-plugin": &bmh.BmhPlugin{}},
+		Cmd: exec.Command("sh", "-c", "../metamorph-redfish-plugin " + string(inputConfig) ),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	        Logger: logger,})
 	defer client.Kill()
@@ -41,7 +42,7 @@ func TestClientRequest(t *testing.T) {
 		os.Exit(1)
 	}
 
-	raw, err := rpcClient.Dispense("bmh")
+	raw, err := rpcClient.Dispense("metamorph-redfish-plugin")
 	if err != nil {
 		fmt.Printf("Error %v\n", err)
 		os.Exit(1)

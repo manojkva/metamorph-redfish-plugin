@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/go-plugin"
-	"github.com/manojkva/metamorph-plugin/plugins/bmh"
+	"github.com/manojkva/metamorph-plugin/common/bmh"
 	driver "github.com/manojkva/metamorph-redfish-plugin/pkg/redfish"
 	"os"
 	"encoding/base64"
@@ -41,6 +41,6 @@ func main() {
 	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig: bmh.Handshake,
 		Plugins: map[string]plugin.Plugin{
-			"bmh": &bmh.BmhPlugin{Impl: &bmhnode}},
+			"metamorph-redfish-plugin": &bmh.BmhPlugin{Impl: &bmhnode}},
 		GRPCServer: plugin.DefaultGRPCServer})
 }
