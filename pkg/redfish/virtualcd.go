@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"errors"
 )
 
 var PowerStateChangeTimeoutSeconds int = 0
@@ -77,16 +78,24 @@ func (bmhnode *BMHNode) Reboot() bool {
 	return result
 }
 
-func (bmhnode *BMHNode) PowerOff() bool {
+func (bmhnode *BMHNode) PowerOff() error {
+	var err error
 	redfishClient := getRedfishClient(bmhnode)
 	result := redfishClient.PowerOff(bmhnode.RedfishSystemID)
-	return result
+	if result == false{
+	    err =  errors.New("Failed to Power Off")
+	}
+	return err
 }
 
-func (bmhnode *BMHNode) PowerOn() bool {
+func (bmhnode *BMHNode) PowerOn() error {
+	var err error
 	redfishClient := getRedfishClient(bmhnode)
 	result := redfishClient.PowerOn(bmhnode.RedfishSystemID)
-	return result
+	if result == false{
+	    err =  errors.New("Failed to Power On")
+	}
+	return err
 }
 
 func (bmhnode *BMHNode) GetPowerStatus() bool {
@@ -168,8 +177,8 @@ func (bmhnode *BMHNode) DeployISO() error {
 	if bmhnode.GetPowerStatus() == false {
 		logger.Log.Warn("Node is in Powered Off state", zap.String("Node Name", bmhnode.Name))
 		logger.Log.Info("Trying to Power On the node", zap.String("Node Name", bmhnode.Name))
-		result = bmhnode.PowerOn()
-		if result == false {
+		err := bmhnode.PowerOn()
+		if err  != nil {
 			errorString = fmt.Sprintf("Failed to power on Node %v", zap.String("Node Name", bmhnode.Name))
 			logger.Log.Error(errorString)
 			return fmt.Errorf("%v", errorString)
@@ -234,4 +243,24 @@ func (bmhnode *BMHNode) SetRedfishIDs() {
 
 		bmhnode.RedfishSystemID = bmhnode.GetSystemID()
 	}
+}
+
+func (bmhnode  *BMHNode) GetHWInventory() (map[string]string,error){
+
+	var err error
+	var hwInfo   = make(map[string]string)
+
+	bmhnode.SetRedfishIDs()
+
+	hwInfo["RedfishVersion"] =  bmhnode.RedfishVersion
+	hwInfo["RedfishManagerID"] = bmhnode.RedfishManagerID
+	hwInfo["RedfishSystemID"] = bmhnode.RedfishSystemID
+
+	for  k,v := range hwInfo{
+		if v == ""{
+			err =  fmt.Errorf("Failed to retrieve %v", k)
+		}
+	}
+
+	return hwInfo, err
 }

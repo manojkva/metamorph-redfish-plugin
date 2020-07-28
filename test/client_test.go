@@ -49,6 +49,6 @@ func TestClientRequest(t *testing.T) {
 
 	}
 	service := raw.(bmh.Bmh)
-  x, err := service.GetGUUID()
-  fmt.Printf("%v\n", string(x))
+  x, err := service.GetHWInventory()
+  fmt.Printf("%v\n", x)
 }
