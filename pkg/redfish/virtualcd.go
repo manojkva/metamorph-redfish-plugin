@@ -74,14 +74,16 @@ func (bmhnode *BMHNode) SetOneTimeBoot() bool {
 
 func (bmhnode *BMHNode) Reboot() bool {
 	redfishClient := getRedfishClient(bmhnode)
-	result := redfishClient.RebootServer(bmhnode.RedfishSystemID)
+	redfishSystemID := redfishClient.GetSystemID()
+	result := redfishClient.RebootServer(redfishSystemID)
 	return result
 }
 
 func (bmhnode *BMHNode) PowerOff() error {
 	var err error
 	redfishClient := getRedfishClient(bmhnode)
-	result := redfishClient.PowerOff(bmhnode.RedfishSystemID)
+	redfishSystemID := redfishClient.GetSystemID()
+	result := redfishClient.PowerOff(redfishSystemID)
 	if result == false{
 	    err =  errors.New("Failed to Power Off")
 	}
@@ -91,27 +93,30 @@ func (bmhnode *BMHNode) PowerOff() error {
 func (bmhnode *BMHNode) PowerOn() error {
 	var err error
 	redfishClient := getRedfishClient(bmhnode)
-	result := redfishClient.PowerOn(bmhnode.RedfishSystemID)
+	redfishSystemID := redfishClient.GetSystemID()
+	result := redfishClient.PowerOn(redfishSystemID)
 	if result == false{
 	    err =  errors.New("Failed to Power On")
 	}
 	return err
 }
 
-func (bmhnode *BMHNode) GetPowerStatus() bool {
+func (bmhnode *BMHNode) GetPowerStatus() (bool,error) {
 	redfishClient := getRedfishClient(bmhnode)
-	result := redfishClient.GetPowerStatus(bmhnode.RedfishSystemID)
-	return result
+	redfishSystemID := redfishClient.GetSystemID()
+	result := redfishClient.GetPowerStatus(redfishSystemID)
+	return result,nil
 }
 
 func (bmhnode *BMHNode) EjectISO() bool {
 	var result bool
 	redfishClient := getRedfishClient(bmhnode)
+	redfishManagerID := redfishClient.GetManagerID()
 	if bmhnode.GetVirtualMediaStatus() == true {
 		if bmhnode.RedfishVersion == "1.0.0" {
-			result = bmhnode.EjectISOILO4(bmhnode.RedfishManagerID)
+			result = bmhnode.EjectISOILO4(redfishManagerID)
 		} else {
-			result = redfishClient.EjectISO(bmhnode.RedfishManagerID, "CD")
+			result = redfishClient.EjectISO(redfishManagerID, "CD")
 		}
 	} else {
 		fmt.Printf("Skipping Eject . VirtualMedia not attached \n")
@@ -173,8 +178,8 @@ func (bmhnode *BMHNode) DeployISO() error {
 	var errorString string
 	var result bool
 	// Setup Raid
-
-	if bmhnode.GetPowerStatus() == false {
+        status , _  := bmhnode.GetPowerStatus() 
+	if status == false {
 		logger.Log.Warn("Node is in Powered Off state", zap.String("Node Name", bmhnode.Name))
 		logger.Log.Info("Trying to Power On the node", zap.String("Node Name", bmhnode.Name))
 		err := bmhnode.PowerOn()

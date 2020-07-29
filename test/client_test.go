@@ -49,6 +49,6 @@ func TestClientRequest(t *testing.T) {
 
 	}
 	service := raw.(bmh.Bmh)
-  x, err := service.GetHWInventory()
+  x, err := service.GetPowerStatus()
   fmt.Printf("%v\n", x)
 }
