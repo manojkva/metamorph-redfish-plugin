@@ -1,7 +1,7 @@
 package redfish
 
 import (
-	config "github.com/bm-metamorph/MetaMorph/pkg/config"
+	config "github.com/manojkva/metamorph-plugin/pkg/config"
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
 	"github.com/stretchr/testify/assert"
 	"testing"

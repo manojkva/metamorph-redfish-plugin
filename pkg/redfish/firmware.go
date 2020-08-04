@@ -7,7 +7,7 @@ import (
 	"path"
 
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
-	"github.com/manojkva/go-redfish-plugin/pkg/isogen"
+	"github.com/manojkva/metamorph-plugin/pkg/util"
 	version "github.com/hashicorp/go-version"
 )
 
@@ -74,7 +74,7 @@ func (bmhnode *BMHNode) UpdateFirmware() error {
 			}
 			defer os.RemoveAll(tempdir)
 			firmwarefilepath := path.Join(tempdir, filename)
-			err = isogen.DownloadUrl(firmwarefilepath, firmware.URL)
+			err = util.DownloadUrl(firmwarefilepath, firmware.URL)
 
 			if err != nil {
 				return fmt.Errorf("Failed to Download URL, %v",err)

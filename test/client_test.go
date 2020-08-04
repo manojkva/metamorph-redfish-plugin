@@ -49,6 +49,7 @@ func TestClientRequest(t *testing.T) {
 
 	}
 	service := raw.(bmh.Bmh)
-  x, err := service.GetPowerStatus()
+  //x, err := service.GetPowerStatus()
+  x, err := service.GetGUUID()
   fmt.Printf("%v\n", x)
 }
