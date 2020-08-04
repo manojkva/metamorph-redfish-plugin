@@ -4,6 +4,7 @@ import (
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
 	"fmt"
 	client "github.com/manojkva/go-redfish-api-wrapper/pkg/redfishwrap/idrac"
+	logger "github.com/manojkva/metamorph-plugin/pkg/logger"
 )
 type BMHNode struct {
 	       *node.Node
@@ -25,6 +26,7 @@ func getRedfishClient(bmhnode *BMHNode) client.IdracRedfishClient {
 		Username: bmhnode.IPMIUser,
 		Password: bmhnode.IPMIPassword,
 		HostIP:   bmhnode.IPMIIP,
+		Logger:   logger.Log,
 	}
 	return redfishClient
 

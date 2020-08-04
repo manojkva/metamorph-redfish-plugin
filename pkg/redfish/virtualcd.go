@@ -2,7 +2,7 @@ package redfish
 
 import (
 	"fmt"
-	"github.com/bm-metamorph/MetaMorph/pkg/logger"
+	"github.com/manojkva/metamorph-plugin/pkg/logger"
 	client "github.com/manojkva/go-redfish-api-wrapper/pkg/redfishwrap/idrac"
 	"go.uber.org/zap"
 	"os"
@@ -143,14 +143,17 @@ func GetUUID(hostIP string, username string, password string) (string, bool) {
 }
 
 func (bmhnode *BMHNode) GetGUUID()([]byte, error){
+	logger.Log.Info("Entering GetGUUID for node", zap.String("Node Name", bmhnode.Name), zap.String("Node UUID", bmhnode.NodeUUID.String()))
 	var err error
 	redfishClient := getRedfishClient(bmhnode)
 	redfishSystemID := redfishClient.GetSystemID()
 	if redfishSystemID == "" {
+		logger.Log.Error("Failed to retrieve SystemID")
 		return []byte(""),fmt.Errorf("Failed to retrieve SystemID")
 	}
 	uuid,res :=  redfishClient.GetNodeUUID(redfishSystemID)
 	if res != true{
+	    logger.Log.Error("Failed to retreive GUUID of Node")
 	    err  = fmt.Errorf("Failed to retreive GUUID of Node")
 
 	}
