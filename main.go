@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	config.SetLoggerConfig("logger.pluginpath")
+	config.SetLoggerConfig("logger.plugins.redfishpluginpath")
 	if len(os.Args) != 2 {
 		fmt.Println("Usage metamorph-redfish-plugin <inputConfig>")
 		os.Exit(1)
