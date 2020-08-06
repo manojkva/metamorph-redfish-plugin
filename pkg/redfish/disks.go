@@ -5,6 +5,7 @@ import (
 	"fmt"
 	client "github.com/manojkva/go-redfish-api-wrapper/pkg/redfishwrap/idrac"
 	logger "github.com/manojkva/metamorph-plugin/pkg/logger"
+	"go.uber.org/zap"
 )
 type BMHNode struct {
 	       *node.Node
@@ -33,18 +34,19 @@ func getRedfishClient(bmhnode *BMHNode) client.IdracRedfishClient {
 }
 
 func (bmhnode *BMHNode) CleanVirtualDIskIfEExists() bool {
+	logger.Log.Info("CleanVirtualDIskIfEExists()")
 	var result bool = false
 	redfishClient := getRedfishClient(bmhnode)
 	virtualdisklist, err := node.GetVirtualDisks(bmhnode.NodeUUID.String())
 	if err != nil {
-		fmt.Printf("Virtual disk list is empty with err %v\n", err)
+		logger.Log.Error(fmt.Sprintf("Virtual disk list is empty\n", zap.Error (err)))
 		return false
 	}
 	for _, raiddisk := range virtualdisklist {
 
 		result = redfishClient.CleanVirtualDisksIfAny(bmhnode.RedfishSystemID, raiddisk.RaidController)
 		if result == false {
-			fmt.Printf("Failed to clean up Virtual Disk %v\n", raiddisk)
+			logger.Log.Error(fmt.Sprintf("Failed to clean up Virtual Disk %v\n", raiddisk))
 			return result
 		}
 	}
@@ -53,12 +55,13 @@ func (bmhnode *BMHNode) CleanVirtualDIskIfEExists() bool {
 }
 
 func (bmhnode *BMHNode) ConfigureRAID() error {
+	logger.Log.Info("ConfigureRAID()")
 
-	fmt.Printf("Inside Create Virtual Disk function\n")
 
 	var result bool
 
 	if !bmhnode.CleanVirtualDIskIfEExists() {
+		logger.Log.Error("Failed to delete existing Virtual Disk")
 	        return  fmt.Errorf("Failed to delete existing Virtual Disk")
 	}
 
@@ -67,6 +70,7 @@ func (bmhnode *BMHNode) ConfigureRAID() error {
 
 	virtualdisklist, err := node.GetVirtualDisks(bmhnode.NodeUUID.String())
 	if err != nil {
+		logger.Log.Error("Virtual disk list is empty",zap.Error(err))
 		return fmt.Errorf("Virtual disk list is empty with err %v", err)
 	}
 
@@ -76,6 +80,7 @@ func (bmhnode *BMHNode) ConfigureRAID() error {
 		physicaldisklist, err := node.GetPhysicalDisks(vd.ID)
 
 		if err != nil {
+			logger.Log.Error("Failed to retrieve Physical Disk", zap.Error(err))
 			return fmt.Errorf("Failed to retrieve physical disks with error %v", err)
 		}
 		for _, disk := range physicaldisklist {
@@ -87,11 +92,12 @@ func (bmhnode *BMHNode) ConfigureRAID() error {
 		jobId := redfishClient.CreateVirtualDisk(bmhnode.RedfishSystemID,
 			vd.RaidController, volumeType, vd.DiskName, diskIDs)
 
-		fmt.Printf("Job Id returned is %v\n", jobId)
+		logger.Log.Debug(fmt.Sprintf("Job Id returned is %v\n", jobId))
 		//check Job Status to decide on return value
 		if jobId != "" {
 			result = redfishClient.CheckJobStatus(jobId,false)
 		} else {
+			logger.Log.Error("Failed to retrieve JobID")
 			result = false
 		}
 

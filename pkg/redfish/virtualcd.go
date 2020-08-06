@@ -31,12 +31,12 @@ func (bmhnode *BMHNode) GetVirtualMediaStatus() bool {
 
 func (bmhnode *BMHNode) InsertISO() bool {
 	if bmhnode.GetVirtualMediaStatus() == true {
-		fmt.Printf("Skipping Iso Insert. CD already Attached\n")
+		logger.Log.Error(fmt.Sprintf("Skipping Iso Insert. CD already Attached\n"))
 		return false
 	}
 
 	redfishClient := getRedfishClient(bmhnode)
-	fmt.Printf("Image URL to be inserted = %v", bmhnode.ImageURL)
+	logger.Log.Debug(fmt.Sprintf("Image URL to be inserted = %v", bmhnode.ImageURL))
 	result := false
 	for retryCount := 0; ; retryCount++ {
 		if bmhnode.RedfishVersion == "1.0.0" {
@@ -52,7 +52,7 @@ func (bmhnode *BMHNode) InsertISO() bool {
 			break
 		}
 		time.Sleep(time.Second * 5)
-		fmt.Printf("Retrying after 5 seconds. Retry Count :%v", retryCount+1)
+		logger.Log.Debug(fmt.Sprintf("Retrying after 5 seconds. Retry Count :%v", retryCount+1))
 
 	}
 	return result
@@ -119,7 +119,7 @@ func (bmhnode *BMHNode) EjectISO() bool {
 			result = redfishClient.EjectISO(redfishManagerID, "CD")
 		}
 	} else {
-		fmt.Printf("Skipping Eject . VirtualMedia not attached \n")
+		logger.Log.Debug(fmt.Sprintf("Skipping Eject . VirtualMedia not attached \n"))
 		result = true
 	}
 	return result
@@ -210,23 +210,23 @@ func (bmhnode *BMHNode) DeployISO() error {
 	}
 	// Redfish steps or installation
 	//Step 1 Eject CD
-	fmt.Printf("Step 1 Eject CD\n")
+	//fmt.Sprintf("Step 1 Eject CD\n")
 	logger.Log.Info("Step 1 Eject CD", zap.String("Node Name", bmhnode.Name))
 	result = bmhnode.EjectISO()
 	if result != false {
 		//Step 2 Insert Ubuntu ISO
 		logger.Log.Info("Step 2 Insert Ubuntu ISO", zap.String("Node Name", bmhnode.Name))
-		fmt.Printf("Step 2 Insert Ubuntu ISO\n")
+		//fmt.Sprintf("Step 2 Insert Ubuntu ISO\n")
 		result = bmhnode.InsertISO()
 		if result != false {
 			//Step 3 Set Onetime boot to CD ROM
 			logger.Log.Info("Step 3 Set Onetime boot to CD", zap.String("Node Name", bmhnode.Name))
-			fmt.Printf("Step 3 Set Onetime boot to CD ROM\n\n")
+			//fmt.Sprintf("Step 3 Set Onetime boot to CD ROM\n\n")
 			result = bmhnode.SetOneTimeBoot()
 			if result != false {
 				//Step 4 Reboot
 				logger.Log.Info("Step 4 Reboot", zap.String("Node Name", bmhnode.Name))
-				fmt.Printf("Step 4 Reboot\n")
+				//fmt.Sprintf("Step 4 Reboot\n")
 
 				result = bmhnode.Reboot()
 

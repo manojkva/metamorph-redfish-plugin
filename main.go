@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"github.com/hashicorp/go-plugin"
 	"github.com/manojkva/metamorph-plugin/common/bmh"
+	"github.com/manojkva/metamorph-plugin/pkg/logger"
 	driver "github.com/manojkva/metamorph-redfish-plugin/pkg/redfish"
 	"os"
 	"encoding/base64"
+	"go.uber.org/zap"
 )
 
 func main() {
 	config.SetLoggerConfig("logger.plugins.redfishpluginpath")
 	if len(os.Args) != 2 {
-		fmt.Println("Usage metamorph-redfish-plugin <inputConfig>")
+		logger.Log.Error(fmt.Sprintf("Usage metamorph-redfish-plugin <inputConfig>"))
 		os.Exit(1)
 	}
 	data := os.Args[1]
@@ -25,8 +27,8 @@ func main() {
         inputConfig,err :=  base64.StdEncoding.DecodeString(data)
 
 	if  err != nil {
-		fmt.Printf("Failed to decode input config %v\n", data)
-		fmt.Printf("Error %v\n", err)
+		logger.Log.Error(fmt.Sprintf("Failed to decode input config %v\n", data))
+		logger.Log.Error(fmt.Sprintf("Error %v\n", err),zap.Error(err))
 		os.Exit(1)
 	}
 
@@ -34,8 +36,8 @@ func main() {
 
 	if err != nil {
 
-		fmt.Printf("Failed to decode input config %v\n", inputConfig)
-		fmt.Printf("Error %v\n", err)
+		logger.Log.Error(fmt.Sprintf("Failed to decode input config %v\n", inputConfig))
+		logger.Log.Error(fmt.Sprintf("Error %v\n", err),zap.Error(err))
 		os.Exit(1)
 	}
 	plugin.Serve(&plugin.ServeConfig{
