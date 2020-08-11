@@ -38,7 +38,7 @@ func (bmhnode *BMHNode) PostRequestToRedfish(endpointURL string, data []byte) (m
 	resp, err := restyClient.R().EnableTrace().
 		SetHeader("Content-Type", "application/json").
 		SetBody([]byte(data)).Post(endpointURL)
-	logger.Log.Debug(fmt.Sprintf("Trace Info:", resp.Request.TraceInfo()))
+	logger.Log.Debug(fmt.Sprintf("Trace Info: %v", resp.Request.TraceInfo()))
 
 	if (err == nil) && checkStatusCode(resp.StatusCode()) {
 		if len(resp.Body()) != 0 {
@@ -62,7 +62,7 @@ func (bmhnode *BMHNode) PatchRequestToRedfish(endpointURL string, data []byte) (
 	resp, err := restyClient.R().EnableTrace().
 		SetHeader("Content-Type", "application/json").
 		SetBody([]byte(data)).Patch(endpointURL)
-	logger.Log.Debug(fmt.Sprintf("Trace Info:", resp.Request.TraceInfo()))
+	logger.Log.Debug(fmt.Sprintf("Trace Info: %v", resp.Request.TraceInfo()))
 
 	if (err == nil) && checkStatusCode(resp.StatusCode()) {
 		err = json.Unmarshal(resp.Body(), &resultBody)
@@ -84,7 +84,7 @@ func (bmhnode *BMHNode) GetRequestRedfish(endpointURL string) (map[string]interf
 	restyClient.SetDebug(true)
 
 	resp, err := restyClient.R().EnableTrace().Get(endpointURL)
-	logger.Log.Debug(fmt.Sprintf("Trace Info:", resp.Request.TraceInfo()))
+	logger.Log.Debug(fmt.Sprintf("Trace Info: %v", resp.Request.TraceInfo()))
 
 	if (err == nil) && checkStatusCode(resp.StatusCode()) {
 		err = json.Unmarshal(resp.Body(), &resultBody)

@@ -10,6 +10,6 @@ import (
 func TestUpgradeFirmware(t *testing.T) {
 	config.SetLoggerConfig("logger.apipath")
 	bmhnode := &BMHNode{node.CreateTestNode()}
-	res := bmhnode.UpgradeFirmware()
+	res := bmhnode.UpdateFirmware()
 	assert.Equal(t, res, nil)
 }

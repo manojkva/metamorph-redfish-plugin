@@ -4,6 +4,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"github.com/bm-metamorph/MetaMorph/pkg/db/models/node"
+	"github.com/manojkva/metamorph-plugin/pkg/config"
+	"fmt"
 )
 
 func TestReboot(t *testing.T) {
@@ -75,7 +77,19 @@ func TestGetRedfishVersion(t *testing.T){
 }
 func TestGetGUUID(t *testing.T){
 	bmhnode := &BMHNode { node.CreateTestNode()}
-	uuid := bmhnode.GetGUUID()
+	uuid,_ := bmhnode.GetGUUID()
 	assert.Equal(t,uuid,"4c4c4544-004a-5910-804d-c2c04f435032")
+
+}
+
+func TestGetHWInventory(t *testing.T){
+	config.SetLoggerConfig("logger.plugins.redfishpluginpath")
+	bmhnode := &BMHNode { node.CreateTestNode()}
+	m, err := bmhnode.GetHWInventory()
+	if err != nil{
+	fmt.Printf("%v", m)
+        }else{
+		fmt.Printf("Error %v", err)
+	}
 
 }

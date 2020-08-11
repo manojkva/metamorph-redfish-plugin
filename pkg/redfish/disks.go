@@ -39,7 +39,7 @@ func (bmhnode *BMHNode) CleanVirtualDIskIfEExists() bool {
 	redfishClient := getRedfishClient(bmhnode)
 	virtualdisklist, err := node.GetVirtualDisks(bmhnode.NodeUUID.String())
 	if err != nil {
-		logger.Log.Error(fmt.Sprintf("Virtual disk list is empty\n", zap.Error (err)))
+		logger.Log.Error(fmt.Sprintf("Virtual disk list is empty\n"), zap.Error (err))
 		return false
 	}
 	for _, raiddisk := range virtualdisklist {
